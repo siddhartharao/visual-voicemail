@@ -9,7 +9,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          We now have auth!
+          We now have auth - I guess!
         </p>
         <a
           className="App-link"
