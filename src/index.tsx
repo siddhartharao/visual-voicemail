@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Amplify from 'aws-amplify';
-import config from './aws-exports';
+import config from './aws-exports.js';
 Amplify.configure(config);
 
 ReactDOM.render(
