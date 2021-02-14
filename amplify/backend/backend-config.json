@@ -1,1 +1,10 @@
-{}
+{
+  "auth": {
+    "visualvoicemail8aea0f86": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}
