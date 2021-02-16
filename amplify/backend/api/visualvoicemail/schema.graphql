@@ -1,0 +1,16 @@
+type Mailbox @model {
+  id: ID!
+  mailbox: String!
+  emailAddress: String
+}
+
+type Voicemail @model {
+  id: ID!
+  mailbox: Mailbox @connection
+  callerID: String
+  duration: Int!
+  timestamp: AWSDateTime!
+  transcript: String
+  buckey: String!
+  key: String!
+}
