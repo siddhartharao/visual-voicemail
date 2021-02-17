@@ -12,16 +12,52 @@
 	STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME
 Amplify Params - DO NOT EDIT */
 
+const axios = require('axios');
+const gql = require('graphql-tag');
+const graphql = require('graphql');
+const { print } = graphql;
+
+
 exports.handler = async (event) => {
-    // TODO implement
-    const response = {
-        statusCode: 200,
-    //  Uncomment below to enable CORS requests
-    //  headers: {
-    //      "Access-Control-Allow-Origin": "*",
-    //      "Access-Control-Allow-Headers": "*"
-    //  }, 
-        body: JSON.stringify('Hello from Lambda!'),
-    };
-    return response;
+    const getMailbox = gql`
+        query GetMailbox($id: ID!) {
+            getMailbox(id: $id) {
+            id
+            mailbox
+            emailAddress
+            createdAt
+            updatedAt
+            }
+        }
+        `;
+
+    try {
+        const graphqlData = await axios({
+            url: process.env.API_VISUALVOICEMAIL_GRAPHQLAPIENDPOINTOUTPUT,
+            method: 'post',
+            headers: {
+                'x-api-key': process.env.API_VISUALVOICEMAIL_GRAPHQLAPIKEYOUTPUT
+            },
+            data: {
+                query: print(getMailbox),
+                variables: {
+                    input: {
+                        id: "1234"
+                    }
+                }
+            }
+        });
+        const body = {
+            graphqlData.data.data.GetMailbox,
+        };
+        return {
+            statusCode: 200,
+            body: JSON.stringify(body),
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+            }
+        };
+    } catch (err) {
+        console.log('Error querying appsync ', err);
+    }
 };

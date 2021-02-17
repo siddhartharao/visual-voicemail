@@ -24,7 +24,39 @@
       "function": {
         "voicemailsma": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
-          "s3Key": "amplify-builds/voicemailsma-476e4743696446476f4d-build.zip"
+          "s3Key": "amplify-builds/voicemailsma-4a49497175464d326539-build.zip"
+        },
+        "vmsma": {
+          "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
+          "s3Key": "amplify-builds/vmsma-39586e63615033344a49-build.zip"
+        },
+        "visualvoicemailcommon": {
+          "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
+          "s3Key": "amplify-builds/visualvoicemailcommon-build.zip"
+        }
+      }
+    },
+    "nonCFNdata": {
+      "function": {
+        "visualvoicemailcommon": {
+          "layerVersionMap": {
+            "1": {
+              "permissions": [
+                {
+                  "type": "private"
+                }
+              ],
+              "hash": "oWNCPmZhlrba8YEynOQuvuOCAV7PBmkXh5/buuRhEV0="
+            },
+            "2": {
+              "permissions": [
+                {
+                  "type": "private"
+                }
+              ],
+              "hash": "lgtQzDj684k9WYJFRXowgkLjvWMB2m5cpDgFdHlf9RE="
+            }
+          }
         }
       }
     }

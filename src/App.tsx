@@ -6,7 +6,7 @@ import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import { listMailboxs, getMailbox, createMailbox as createMailboxMutation, updateMailbox, deleteMailbox as deleteMailboxMutation, ListMailboxsQuery } from './graphql';
 import { Mailbox } from './models';
 
-const initialFormState = { mailbox: '', emailAddress: '' };
+const initialFormState = { id: '', mailbox: '', emailAddress: '' };
 
 function App() {
   const [mailboxes, setMailbox] = useState<ListMailboxsQuery | undefined>(undefined);
@@ -46,7 +46,7 @@ function App() {
     <div className="App">
       <h1>My Mailboxes</h1>
       <input
-        onChange={e => setFormData({ ...formData, 'mailbox': e.target.value})}
+        onChange={e => setFormData({ ...formData, 'id': e.target.value, 'mailbox': e.target.value})}
         placeholder="Mailbox Name"
         value={formData.mailbox}
       />
