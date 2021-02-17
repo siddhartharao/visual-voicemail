@@ -24,5 +24,45 @@
         }
       }
     }
+  },
+  "storage": {
+    "visualvoicemail167e06e1": {
+      "service": "S3",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
+    }
+  },
+  "function": {
+    "voicemailsma": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "visualvoicemail8aea0f86",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
+          "category": "api",
+          "resourceName": "visualvoicemail",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
+          ]
+        },
+        {
+          "category": "storage",
+          "resourceName": "visualvoicemail167e06e1",
+          "attributes": [
+            "BucketName"
+          ]
+        }
+      ]
+    }
   }
 }

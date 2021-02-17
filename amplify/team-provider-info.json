@@ -14,6 +14,18 @@
     "categories": {
       "auth": {
         "visualvoicemail8aea0f86": {}
+      },
+      "storage": {
+        "visualvoicemail167e06e1": {
+          "bucketName": "voicemailmessages",
+          "region": "us-east-1"
+        }
+      },
+      "function": {
+        "voicemailsma": {
+          "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
+          "s3Key": "amplify-builds/voicemailsma-476e4743696446476f4d-build.zip"
+        }
       }
     }
   }

@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "auth": {
+      "visualvoicemail8aea0f86": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    "api": {
+      "visualvoicemail": [
+        "Query",
+        "Mutation",
+        "Subscription"
+      ]
+    },
+    "storage": {
+      "visualvoicemail167e06e1": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "Mailbox:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "Voicemail:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

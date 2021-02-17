@@ -1,6 +1,6 @@
 {
     "identityPoolName": "visualvoicemail8aea0f86_identitypool_8aea0f86",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "visual8aea0f86",
     "userPoolName": "visualvoicemail8aea0f86_userpool_8aea0f86",
     "autoVerifiedAttributes": [
