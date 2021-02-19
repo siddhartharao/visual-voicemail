@@ -1,3 +1,11 @@
+enum VoicemailState {
+  Created
+  LanguageSelected
+  MailboxSelected
+  Recorded,
+  Transcribed
+}
+
 type Mailbox @model {
   id: ID!
   mailbox: String!
@@ -6,11 +14,14 @@ type Mailbox @model {
 
 type Voicemail @model {
   id: ID!
-  mailbox: Mailbox @connection
+  state: VoicemailState
+  mailboxID: ID
+  mailbox: Mailbox @connection(fields: ["mailboxID"])
   callerID: String
-  duration: Int!
-  timestamp: AWSDateTime!
+  duration: Int
+  timestamp: AWSDateTime
   transcript: String
-  buckey: String!
-  key: String!
+  bucket: String
+  key: String
+  targetLanguage: String
 }

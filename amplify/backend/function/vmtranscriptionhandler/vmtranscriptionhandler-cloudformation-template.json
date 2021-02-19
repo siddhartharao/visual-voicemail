@@ -16,13 +16,21 @@
     "s3Key": {
       "Type": "String"
     },
-    "authvisualvoicemail8aea0f86UserPoolId": {
-      "Type": "String",
-      "Default": "authvisualvoicemail8aea0f86UserPoolId"
-    },
     "apivisualvoicemailGraphQLAPIIdOutput": {
       "Type": "String",
       "Default": "apivisualvoicemailGraphQLAPIIdOutput"
+    },
+    "functionvisualvoicemailcommonArn": {
+      "Type": "String",
+      "Default": "functionvisualvoicemailcommonArn"
+    },
+    "storagevisualvoicemail167e06e1BucketName": {
+      "Type": "String",
+      "Default": "storagevisualvoicemail167e06e1BucketName"
+    },
+    "authvisualvoicemail8aea0f86UserPoolId": {
+      "Type": "String",
+      "Default": "authvisualvoicemail8aea0f86UserPoolId"
     },
     "apivisualvoicemailGraphQLAPIEndpointOutput": {
       "Type": "String",
@@ -31,14 +39,6 @@
     "apivisualvoicemailGraphQLAPIKeyOutput": {
       "Type": "String",
       "Default": "apivisualvoicemailGraphQLAPIKeyOutput"
-    },
-    "storagevisualvoicemail167e06e1BucketName": {
-      "Type": "String",
-      "Default": "storagevisualvoicemail167e06e1BucketName"
-    },
-    "functionvisualvoicemailcommonArn": {
-      "Type": "String",
-      "Default": "functionvisualvoicemailcommonArn"
     }
   },
   "Conditions": {
@@ -71,12 +71,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "vmsma",
+            "vmtranscriptionhandler",
             {
               "Fn::Join": [
                 "",
                 [
-                  "vmsma",
+                  "vmtranscriptionhandler",
                   "-",
                   {
                     "Ref": "env"
@@ -93,47 +93,6 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
-            },
-            "AUTH_VISUALVOICEMAIL8AEA0F86_USERPOOLID": {
-              "Ref": "authvisualvoicemail8aea0f86UserPoolId"
-            },
-            "API_VISUALVOICEMAIL_GRAPHQLAPIIDOUTPUT": {
-              "Ref": "apivisualvoicemailGraphQLAPIIdOutput"
-            },
-            "API_VISUALVOICEMAIL_GRAPHQLAPIENDPOINTOUTPUT": {
-              "Ref": "apivisualvoicemailGraphQLAPIEndpointOutput"
-            },
-            "API_VISUALVOICEMAIL_GRAPHQLAPIKEYOUTPUT": {
-              "Ref": "apivisualvoicemailGraphQLAPIKeyOutput"
-            },
-            "STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME": {
-              "Ref": "storagevisualvoicemail167e06e1BucketName"
-            },
-            "API_VISUALVOICEMAIL_MAILBOXTABLE_NAME": {
-              "Fn::ImportValue": {
-                "Fn::Sub": "${apivisualvoicemailGraphQLAPIIdOutput}:GetAtt:MailboxTable:Name"
-              }
-            },
-            "API_VISUALVOICEMAIL_MAILBOXTABLE_ARN": {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:aws:dynamodb:",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                    "Ref": "AWS::AccountId"
-                  },
-                  ":table/",
-                  {
-                    "Fn::ImportValue": {
-                      "Fn::Sub": "${apivisualvoicemailGraphQLAPIIdOutput}:GetAtt:MailboxTable:Name"
-                    }
-                  }
-                ]
-              ]
             },
             "API_VISUALVOICEMAIL_VOICEMAILTABLE_NAME": {
               "Fn::ImportValue": {
@@ -160,6 +119,47 @@
                   }
                 ]
               ]
+            },
+            "API_VISUALVOICEMAIL_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "apivisualvoicemailGraphQLAPIIdOutput"
+            },
+            "STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME": {
+              "Ref": "storagevisualvoicemail167e06e1BucketName"
+            },
+            "AUTH_VISUALVOICEMAIL8AEA0F86_USERPOOLID": {
+              "Ref": "authvisualvoicemail8aea0f86UserPoolId"
+            },
+            "API_VISUALVOICEMAIL_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apivisualvoicemailGraphQLAPIEndpointOutput"
+            },
+            "API_VISUALVOICEMAIL_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apivisualvoicemailGraphQLAPIKeyOutput"
+            },
+            "API_VISUALVOICEMAIL_MAILBOXTABLE_NAME": {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${apivisualvoicemailGraphQLAPIIdOutput}:GetAtt:MailboxTable:Name"
+              }
+            },
+            "API_VISUALVOICEMAIL_MAILBOXTABLE_ARN": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:dynamodb:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":table/",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${apivisualvoicemailGraphQLAPIIdOutput}:GetAtt:MailboxTable:Name"
+                    }
+                  }
+                ]
+              ]
             }
           }
         },
@@ -172,7 +172,7 @@
         "Runtime": "nodejs12.x",
         "Layers": [
           {
-            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:visualvoicemailcommon-staging:1"
+            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:visualvoicemailcommon-staging:2"
           }
         ],
         "Timeout": "25"
@@ -184,12 +184,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "visualvoicemailLambdaRolef94cc6db",
+            "visualvoicemailLambdaRole54aea4e5",
             {
               "Fn::Join": [
                 "",
                 [
-                  "visualvoicemailLambdaRolef94cc6db",
+                  "visualvoicemailLambdaRole54aea4e5",
                   "-",
                   {
                     "Ref": "env"
@@ -255,15 +255,6 @@
                   }
                 ]
               }
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "polly:SynthesizeSpeech",
-                "s3:*",
-                "transcribe:*"
-              ],
-              "Resource": "*"
             }
           ]
         }

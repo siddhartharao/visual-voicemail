@@ -77,75 +77,44 @@ export type DeleteMailboxInput = {
 
 export type CreateVoicemailInput = {
   id?: string | null,
+  state?: VoicemailState | null,
+  mailboxID?: string | null,
   callerID?: string | null,
-  duration: number,
-  timestamp: string,
+  duration?: number | null,
+  timestamp?: string | null,
   transcript?: string | null,
-  buckey: string,
-  key: string,
-  voicemailMailboxId?: string | null,
+  bucket?: string | null,
+  key?: string | null,
+  targetLanguage?: string | null,
 };
 
+export enum VoicemailState {
+  Created = "Created",
+  LanguageSelected = "LanguageSelected",
+  MailboxSelected = "MailboxSelected",
+  Recorded = "Recorded",
+  Transcribed = "Transcribed",
+}
+
+
 export type ModelVoicemailConditionInput = {
+  state?: ModelVoicemailStateInput | null,
+  mailboxID?: ModelIDInput | null,
   callerID?: ModelStringInput | null,
   duration?: ModelIntInput | null,
   timestamp?: ModelStringInput | null,
   transcript?: ModelStringInput | null,
-  buckey?: ModelStringInput | null,
+  bucket?: ModelStringInput | null,
   key?: ModelStringInput | null,
+  targetLanguage?: ModelStringInput | null,
   and?: Array< ModelVoicemailConditionInput | null > | null,
   or?: Array< ModelVoicemailConditionInput | null > | null,
   not?: ModelVoicemailConditionInput | null,
 };
 
-export type ModelIntInput = {
-  ne?: number | null,
-  eq?: number | null,
-  le?: number | null,
-  lt?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  between?: Array< number | null > | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-};
-
-export type Voicemail = {
-  __typename: "Voicemail",
-  id?: string,
-  mailbox?: Mailbox,
-  callerID?: string | null,
-  duration?: number,
-  timestamp?: string,
-  transcript?: string | null,
-  buckey?: string,
-  key?: string,
-  createdAt?: string,
-  updatedAt?: string,
-};
-
-export type UpdateVoicemailInput = {
-  id: string,
-  callerID?: string | null,
-  duration?: number | null,
-  timestamp?: string | null,
-  transcript?: string | null,
-  buckey?: string | null,
-  key?: string | null,
-  voicemailMailboxId?: string | null,
-};
-
-export type DeleteVoicemailInput = {
-  id?: string | null,
-};
-
-export type ModelMailboxFilterInput = {
-  id?: ModelIDInput | null,
-  mailbox?: ModelStringInput | null,
-  emailAddress?: ModelStringInput | null,
-  and?: Array< ModelMailboxFilterInput | null > | null,
-  or?: Array< ModelMailboxFilterInput | null > | null,
-  not?: ModelMailboxFilterInput | null,
+export type ModelVoicemailStateInput = {
+  eq?: VoicemailState | null,
+  ne?: VoicemailState | null,
 };
 
 export type ModelIDInput = {
@@ -164,6 +133,61 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
+export type ModelIntInput = {
+  ne?: number | null,
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+};
+
+export type Voicemail = {
+  __typename: "Voicemail",
+  id?: string,
+  state?: VoicemailState | null,
+  mailboxID?: string | null,
+  mailbox?: Mailbox,
+  callerID?: string | null,
+  duration?: number | null,
+  timestamp?: string | null,
+  transcript?: string | null,
+  bucket?: string | null,
+  key?: string | null,
+  targetLanguage?: string | null,
+  createdAt?: string,
+  updatedAt?: string,
+};
+
+export type UpdateVoicemailInput = {
+  id: string,
+  state?: VoicemailState | null,
+  mailboxID?: string | null,
+  callerID?: string | null,
+  duration?: number | null,
+  timestamp?: string | null,
+  transcript?: string | null,
+  bucket?: string | null,
+  key?: string | null,
+  targetLanguage?: string | null,
+};
+
+export type DeleteVoicemailInput = {
+  id?: string | null,
+};
+
+export type ModelMailboxFilterInput = {
+  id?: ModelIDInput | null,
+  mailbox?: ModelStringInput | null,
+  emailAddress?: ModelStringInput | null,
+  and?: Array< ModelMailboxFilterInput | null > | null,
+  or?: Array< ModelMailboxFilterInput | null > | null,
+  not?: ModelMailboxFilterInput | null,
+};
+
 export type ModelMailboxConnection = {
   __typename: "ModelMailboxConnection",
   items?:  Array<Mailbox | null > | null,
@@ -172,12 +196,15 @@ export type ModelMailboxConnection = {
 
 export type ModelVoicemailFilterInput = {
   id?: ModelIDInput | null,
+  state?: ModelVoicemailStateInput | null,
+  mailboxID?: ModelIDInput | null,
   callerID?: ModelStringInput | null,
   duration?: ModelIntInput | null,
   timestamp?: ModelStringInput | null,
   transcript?: ModelStringInput | null,
-  buckey?: ModelStringInput | null,
+  bucket?: ModelStringInput | null,
   key?: ModelStringInput | null,
+  targetLanguage?: ModelStringInput | null,
   and?: Array< ModelVoicemailFilterInput | null > | null,
   or?: Array< ModelVoicemailFilterInput | null > | null,
   not?: ModelVoicemailFilterInput | null,
@@ -246,6 +273,8 @@ export type CreateVoicemailMutation = {
   createVoicemail?:  {
     __typename: "Voicemail",
     id: string,
+    state?: VoicemailState | null,
+    mailboxID?: string | null,
     mailbox?:  {
       __typename: "Mailbox",
       id: string,
@@ -255,11 +284,12 @@ export type CreateVoicemailMutation = {
       updatedAt: string,
     } | null,
     callerID?: string | null,
-    duration: number,
-    timestamp: string,
+    duration?: number | null,
+    timestamp?: string | null,
     transcript?: string | null,
-    buckey: string,
-    key: string,
+    bucket?: string | null,
+    key?: string | null,
+    targetLanguage?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -274,6 +304,8 @@ export type UpdateVoicemailMutation = {
   updateVoicemail?:  {
     __typename: "Voicemail",
     id: string,
+    state?: VoicemailState | null,
+    mailboxID?: string | null,
     mailbox?:  {
       __typename: "Mailbox",
       id: string,
@@ -283,11 +315,12 @@ export type UpdateVoicemailMutation = {
       updatedAt: string,
     } | null,
     callerID?: string | null,
-    duration: number,
-    timestamp: string,
+    duration?: number | null,
+    timestamp?: string | null,
     transcript?: string | null,
-    buckey: string,
-    key: string,
+    bucket?: string | null,
+    key?: string | null,
+    targetLanguage?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -302,6 +335,8 @@ export type DeleteVoicemailMutation = {
   deleteVoicemail?:  {
     __typename: "Voicemail",
     id: string,
+    state?: VoicemailState | null,
+    mailboxID?: string | null,
     mailbox?:  {
       __typename: "Mailbox",
       id: string,
@@ -311,11 +346,12 @@ export type DeleteVoicemailMutation = {
       updatedAt: string,
     } | null,
     callerID?: string | null,
-    duration: number,
-    timestamp: string,
+    duration?: number | null,
+    timestamp?: string | null,
     transcript?: string | null,
-    buckey: string,
-    key: string,
+    bucket?: string | null,
+    key?: string | null,
+    targetLanguage?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -365,6 +401,8 @@ export type GetVoicemailQuery = {
   getVoicemail?:  {
     __typename: "Voicemail",
     id: string,
+    state?: VoicemailState | null,
+    mailboxID?: string | null,
     mailbox?:  {
       __typename: "Mailbox",
       id: string,
@@ -374,11 +412,12 @@ export type GetVoicemailQuery = {
       updatedAt: string,
     } | null,
     callerID?: string | null,
-    duration: number,
-    timestamp: string,
+    duration?: number | null,
+    timestamp?: string | null,
     transcript?: string | null,
-    buckey: string,
-    key: string,
+    bucket?: string | null,
+    key?: string | null,
+    targetLanguage?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -396,12 +435,15 @@ export type ListVoicemailsQuery = {
     items?:  Array< {
       __typename: "Voicemail",
       id: string,
+      state?: VoicemailState | null,
+      mailboxID?: string | null,
       callerID?: string | null,
-      duration: number,
-      timestamp: string,
+      duration?: number | null,
+      timestamp?: string | null,
       transcript?: string | null,
-      buckey: string,
-      key: string,
+      bucket?: string | null,
+      key?: string | null,
+      targetLanguage?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null > | null,
@@ -446,6 +488,8 @@ export type OnCreateVoicemailSubscription = {
   onCreateVoicemail?:  {
     __typename: "Voicemail",
     id: string,
+    state?: VoicemailState | null,
+    mailboxID?: string | null,
     mailbox?:  {
       __typename: "Mailbox",
       id: string,
@@ -455,11 +499,12 @@ export type OnCreateVoicemailSubscription = {
       updatedAt: string,
     } | null,
     callerID?: string | null,
-    duration: number,
-    timestamp: string,
+    duration?: number | null,
+    timestamp?: string | null,
     transcript?: string | null,
-    buckey: string,
-    key: string,
+    bucket?: string | null,
+    key?: string | null,
+    targetLanguage?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -469,6 +514,8 @@ export type OnUpdateVoicemailSubscription = {
   onUpdateVoicemail?:  {
     __typename: "Voicemail",
     id: string,
+    state?: VoicemailState | null,
+    mailboxID?: string | null,
     mailbox?:  {
       __typename: "Mailbox",
       id: string,
@@ -478,11 +525,12 @@ export type OnUpdateVoicemailSubscription = {
       updatedAt: string,
     } | null,
     callerID?: string | null,
-    duration: number,
-    timestamp: string,
+    duration?: number | null,
+    timestamp?: string | null,
     transcript?: string | null,
-    buckey: string,
-    key: string,
+    bucket?: string | null,
+    key?: string | null,
+    targetLanguage?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -492,6 +540,8 @@ export type OnDeleteVoicemailSubscription = {
   onDeleteVoicemail?:  {
     __typename: "Voicemail",
     id: string,
+    state?: VoicemailState | null,
+    mailboxID?: string | null,
     mailbox?:  {
       __typename: "Mailbox",
       id: string,
@@ -501,11 +551,12 @@ export type OnDeleteVoicemailSubscription = {
       updatedAt: string,
     } | null,
     callerID?: string | null,
-    duration: number,
-    timestamp: string,
+    duration?: number | null,
+    timestamp?: string | null,
     transcript?: string | null,
-    buckey: string,
-    key: string,
+    bucket?: string | null,
+    key?: string | null,
+    targetLanguage?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,

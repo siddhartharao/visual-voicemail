@@ -51,6 +51,8 @@ export const createVoicemail = /* GraphQL */ `
   ) {
     createVoicemail(input: $input, condition: $condition) {
       id
+      state
+      mailboxID
       mailbox {
         id
         mailbox
@@ -62,8 +64,9 @@ export const createVoicemail = /* GraphQL */ `
       duration
       timestamp
       transcript
-      buckey
+      bucket
       key
+      targetLanguage
       createdAt
       updatedAt
     }
@@ -76,6 +79,8 @@ export const updateVoicemail = /* GraphQL */ `
   ) {
     updateVoicemail(input: $input, condition: $condition) {
       id
+      state
+      mailboxID
       mailbox {
         id
         mailbox
@@ -87,8 +92,9 @@ export const updateVoicemail = /* GraphQL */ `
       duration
       timestamp
       transcript
-      buckey
+      bucket
       key
+      targetLanguage
       createdAt
       updatedAt
     }
@@ -101,6 +107,8 @@ export const deleteVoicemail = /* GraphQL */ `
   ) {
     deleteVoicemail(input: $input, condition: $condition) {
       id
+      state
+      mailboxID
       mailbox {
         id
         mailbox
@@ -112,8 +120,9 @@ export const deleteVoicemail = /* GraphQL */ `
       duration
       timestamp
       transcript
-      buckey
+      bucket
       key
+      targetLanguage
       createdAt
       updatedAt
     }

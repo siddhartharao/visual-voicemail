@@ -39,6 +39,8 @@ export const onCreateVoicemail = /* GraphQL */ `
   subscription OnCreateVoicemail {
     onCreateVoicemail {
       id
+      state
+      mailboxID
       mailbox {
         id
         mailbox
@@ -50,8 +52,9 @@ export const onCreateVoicemail = /* GraphQL */ `
       duration
       timestamp
       transcript
-      buckey
+      bucket
       key
+      targetLanguage
       createdAt
       updatedAt
     }
@@ -61,6 +64,8 @@ export const onUpdateVoicemail = /* GraphQL */ `
   subscription OnUpdateVoicemail {
     onUpdateVoicemail {
       id
+      state
+      mailboxID
       mailbox {
         id
         mailbox
@@ -72,8 +77,9 @@ export const onUpdateVoicemail = /* GraphQL */ `
       duration
       timestamp
       transcript
-      buckey
+      bucket
       key
+      targetLanguage
       createdAt
       updatedAt
     }
@@ -83,6 +89,8 @@ export const onDeleteVoicemail = /* GraphQL */ `
   subscription OnDeleteVoicemail {
     onDeleteVoicemail {
       id
+      state
+      mailboxID
       mailbox {
         id
         mailbox
@@ -94,8 +102,9 @@ export const onDeleteVoicemail = /* GraphQL */ `
       duration
       timestamp
       transcript
-      buckey
+      bucket
       key
+      targetLanguage
       createdAt
       updatedAt
     }

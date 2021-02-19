@@ -35,6 +35,8 @@ export const getVoicemail = /* GraphQL */ `
   query GetVoicemail($id: ID!) {
     getVoicemail(id: $id) {
       id
+      state
+      mailboxID
       mailbox {
         id
         mailbox
@@ -46,8 +48,9 @@ export const getVoicemail = /* GraphQL */ `
       duration
       timestamp
       transcript
-      buckey
+      bucket
       key
+      targetLanguage
       createdAt
       updatedAt
     }
@@ -62,12 +65,15 @@ export const listVoicemails = /* GraphQL */ `
     listVoicemails(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        state
+        mailboxID
         callerID
         duration
         timestamp
         transcript
-        buckey
+        bucket
         key
+        targetLanguage
         createdAt
         updatedAt
       }

@@ -71,12 +71,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "vmsma",
+            "scratchpad",
             {
               "Fn::Join": [
                 "",
                 [
-                  "vmsma",
+                  "scratchpad",
                   "-",
                   {
                     "Ref": "env"
@@ -172,7 +172,7 @@
         "Runtime": "nodejs12.x",
         "Layers": [
           {
-            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:visualvoicemailcommon-staging:1"
+            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:visualvoicemailcommon-staging:2"
           }
         ],
         "Timeout": "25"
@@ -184,12 +184,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "visualvoicemailLambdaRolef94cc6db",
+            "visualvoicemailLambdaRole87a190c5",
             {
               "Fn::Join": [
                 "",
                 [
-                  "visualvoicemailLambdaRolef94cc6db",
+                  "visualvoicemailLambdaRole87a190c5",
                   "-",
                   {
                     "Ref": "env"
@@ -260,8 +260,7 @@
               "Effect": "Allow",
               "Action": [
                 "polly:SynthesizeSpeech",
-                "s3:*",
-                "transcribe:*"
+                "s3:*"
               ],
               "Resource": "*"
             }
