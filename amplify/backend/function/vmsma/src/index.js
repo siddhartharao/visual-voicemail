@@ -18,11 +18,21 @@ const graphql = require('graphql');
 const AWS = require('aws-sdk');
 const { print } = graphql;
 
+const REGION = process.env.REGION;
+
 const Polly = new AWS.Polly({
   signatureVersion: 'v4',
-  region: 'us-east-1'
-})
+  region: REGION
+});
 const s3 = new AWS.S3();
+
+
+
+const transcribeClient = new AWS.TranscribeService({
+  signatureVersion: 'v4',
+  region: REGION
+});
+
 
 
 exports.handler = async (event, context, callback) => {
@@ -40,7 +50,7 @@ exports.handler = async (event, context, callback) => {
             // Action from the previous invocation response 
             // or a action requiring callback was successful
             console.log("SUCCESS ACTION");
-            actions = [];
+            actions = await actionSuccessful(event);
             break;
     
         case "HANGUP":
@@ -125,33 +135,37 @@ async function newCall(event) {
     const legA = getLegACallDetails(event);
     if (legA) {
         const callID = legA.CallId;
-        const s3AnnounceBucketName = process.env.STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME;
-        const s3EntranceKeyName = announcementsKeyPrefix + callID + "/entrance.wav";
-        const s3EntranceFailKeyName = announcementsKeyPrefix + callID + "/entrancefailure.wav";
-        await synthesizeWelcomeSpeech(s3AnnounceBucketName, s3EntranceKeyName);
-        await synthesizeSpeech(s3AnnounceBucketName, s3EntranceFailKeyName, "Hmmm... I didn't get that, please try again.", 'text', 'Joanna', 'en-US');
-        rv = [pauseAction, {
-            "Type" : "PlayAudioAndGetDigits",
-            "Parameters" : {
-                "AudioSource": {
-                    "ParticipantTag": "LEG-A",
-                    "Type": "S3",
-                    "BucketName": s3AnnounceBucketName,
-                    "Key": s3EntranceKeyName
-                },
-                "FailureAudioSource": {
-                    "ParticipantTag": "LEG-A",
-                    "Type": "S3",
-                    "BucketName": s3AnnounceBucketName,
-                    "Key": s3EntranceFailKeyName
-                },
-                "MinNumberOfDigits": 1,
-                "MaxNumberOfDigits": 1,
-                "Repeat": 3,
-                "RepeatDurationInMilliseconds": 10000,
-                "InputDigitsRegex": "[1-2]"
-            }
-        }];
+        const voicemailID = getVoicemailID(event);
+        const voicemail = await getOrCreateVoicemail(voicemailID, legA); // Get or create
+        if (voicemail) {
+            const s3AnnounceBucketName = process.env.STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME;
+            const s3EntranceKeyName = announcementsKeyPrefix + callID + "/entrance.wav";
+            const s3EntranceFailKeyName = announcementsKeyPrefix + callID + "/entrancefailure.wav";
+            await synthesizeWelcomeSpeech(s3AnnounceBucketName, s3EntranceKeyName);
+            await synthesizeSpeech(s3AnnounceBucketName, s3EntranceFailKeyName, "Hmmm... I didn't get that, please try again.", 'text', 'Joanna', 'en-US');
+            rv = [pauseAction, {
+                "Type" : "PlayAudioAndGetDigits",
+                "Parameters" : {
+                    "AudioSource": {
+                        "ParticipantTag": "LEG-A",
+                        "Type": "S3",
+                        "BucketName": s3AnnounceBucketName,
+                        "Key": s3EntranceKeyName
+                    },
+                    "FailureAudioSource": {
+                        "ParticipantTag": "LEG-A",
+                        "Type": "S3",
+                        "BucketName": s3AnnounceBucketName,
+                        "Key": s3EntranceFailKeyName
+                    },
+                    "MinNumberOfDigits": 1,
+                    "MaxNumberOfDigits": 1,
+                    "Repeat": 3,
+                    "RepeatDurationInMilliseconds": 10000,
+                    "InputDigitsRegex": "[1-2]"
+                }
+            }];
+        }
     }
     return rv;
 };
@@ -186,7 +200,206 @@ async function actionSuccessful(event) {
   }
 }
 */
+    let rv = [hangupAction];
+    const legA = getLegACallDetails(event);
+    const callID = legA.CallId;
+    const voicemailID = getVoicemailID(event);
+    console.log(voicemailID);
+    const voicemail = await getVoicemail(voicemailID);
+    console.log("Received voicemail object...");
+    console.log(JSON.stringify(voicemail));
+    if (voicemail) {
+        switch (voicemail.state) {
+            case VoicemailState.Created:
+                rv = await actionCollectMailbox(event, callID, voicemailID, voicemail);
+                break;
+            case VoicemailState.LanguageSelected:
+                rv = await verifyMailbox(event, callID, voicemailID, voicemail);
+                break;
+            case VoicemailState.MailboxSelected:
+                rv = await recordingComplete(event, callID, voicemailID, voicemail);
+                break;
+            default:
+                break;
+        }
+    }
+    return rv;
+};
 
+const messageMaximumLengthInSeconds = 30;
+
+async function verifyMailbox(event, callID, voicemailID, voicemail) {
+    console.log("In mailbox verify step");
+    console.log(JSON.stringify(event));
+    let rv = [hangupAction];
+    if (event.ActionData && event.ActionData.ReceivedDigits) {
+        let isEnglish = (voicemail.targetLanguage === 'en-US');
+        let mailboxID = event.ActionData.ReceivedDigits;
+        let mailbox = getMailbox(mailboxID);
+        if (mailbox) {
+            // Found a mailbox, time to do the actual recording.
+            const s3AnnounceBucketName = process.env.STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME;
+            const s3EntranceKeyName = announcementsKeyPrefix + callID + "/recordmessage.wav";
+            await synthesizeSpeech(s3AnnounceBucketName, 
+                s3EntranceKeyName, 
+                isEnglish ? 
+                    "Please leave a message, press pound when done." : 
+                    "Deje un mensaje, presione libra cuando termine.", 
+                'text', 'Joanna', 
+                isEnglish ? 'en-US' : 'es-ES' );
+            const audioPlayAction = {
+                "Type" : "PlayAudio",    
+                "Parameters" : {
+                    "ParticipantTag": "LEG-A",
+                    "AudioSource": {
+                        "Type": "S3",
+                        "BucketName": s3AnnounceBucketName,
+                        "Key": s3EntranceKeyName
+                    }
+                }
+            };
+            const recordMessageAction = {
+                "Type" : "RecordAudio",
+                "Parameters" : {
+                    "ParticipantTag": "LEG-A",
+                    "DurationInSeconds": messageMaximumLengthInSeconds,
+                    "RecordingTerminators": ["#"],
+                    "RecordingDestination": {
+                        "Type": "S3",
+                        "BucketName": s3AnnounceBucketName
+                    }
+                }
+            };
+            voicemail.state = VoicemailState.MailboxSelected;
+            await updateVoicemail(voicemail);
+            rv = [audioPlayAction, recordMessageAction];
+            
+        }
+        else {
+            // Go back through this loop.
+            // If you wanted to make the IVR prettier, you would play 
+            // another message saying "mailbox not found" and then redo the loop
+            // But this is also a security concern as it tells folks what mailboxes 
+            // don't exist as well
+            rv = await actionCollectMailbox(event, callID, voicemailID, voicemail);
+        }
+    }
+    return rv;
+};
+
+async function actionCollectMailbox(event, callID, voicemailID, voicemail) {
+    console.log("In mailbox ID collection step");
+    console.log(JSON.stringify(event));
+    let rv = [hangupAction];
+    if (event.ActionData && event.ActionData.ReceivedDigits) {
+        let isEnglish = true;
+        voicemail.targetLanguage = 'en-US';
+        if (event.ActionData.ReceivedDigits === '2') {
+            voicemail.targetLanguage = 'es-ES';
+            isEnglish = false;
+        }
+        voicemail.state = VoicemailState.LanguageSelected;
+        await updateVoicemail(voicemail);
+        const s3AnnounceBucketName = process.env.STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME;
+        const s3EntranceKeyName = announcementsKeyPrefix + callID + "/collectmailbox.wav";
+        const s3EntranceFailKeyName = announcementsKeyPrefix + callID + "/collectmailboxerror.wav";
+        await synthesizeSpeech(s3AnnounceBucketName, 
+            s3EntranceKeyName, 
+            isEnglish ? "Please enter a mailbox number." : "Ingrese un número de buzón.", 
+            'text', 'Joanna', 
+            isEnglish ? 'en-US' : 'es-ES' );
+        await synthesizeSpeech(s3AnnounceBucketName, 
+            s3EntranceFailKeyName, 
+            isEnglish ? "Invalid entry." : "Entrada invalida.", 
+            'text', 'Joanna', 
+            isEnglish ? 'en-US' : 'es-ES' );
+        rv = [pauseAction, {
+            "Type" : "PlayAudioAndGetDigits",
+            "Parameters" : {
+                "AudioSource": {
+                    "ParticipantTag": "LEG-A",
+                    "Type": "S3",
+                    "BucketName": s3AnnounceBucketName,
+                    "Key": s3EntranceKeyName
+                },
+                "FailureAudioSource": {
+                    "ParticipantTag": "LEG-A",
+                    "Type": "S3",
+                    "BucketName": s3AnnounceBucketName,
+                    "Key": s3EntranceFailKeyName
+                },
+                "MinNumberOfDigits": 3,
+                "MaxNumberOfDigits": 10,
+                "Repeat": 3,
+                "RepeatDurationInMilliseconds": 10000,
+            }
+        }];
+    }
+    return rv;
+};
+
+async function recordingComplete(event, callID, voicemailID, voicemail) {
+    console.log("In recording complete step");
+    console.log(JSON.stringify(event));
+    let rv = [hangupAction];
+    if (event.ActionData && event.ActionData.Type === 'RecordAudio') {
+        let isEnglish = (voicemail.targetLanguage === 'en-US');
+        const s3AnnounceBucketName = process.env.STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME;
+        voicemail.bucket = s3AnnounceBucketName;
+        if (event.ActionData && event.ActionData.Parameters && 
+            event.ActionData.RecordingDestination && 
+            event.ActionData.RecordingDestination.Key) {
+            voicemail.key = event.ActionData.RecordingDestination.Key;        
+        }
+        voicemail.state = VoicemailState.Recorded;
+        await updateVoicemail(voicemail);
+        await transcribeVoicemail(voicemail);
+        const s3EntranceKeyName = announcementsKeyPrefix + callID + "/thankyou.wav";
+        await synthesizeSpeech(s3AnnounceBucketName, 
+            s3EntranceKeyName, 
+            isEnglish ? "Thank you for leaving a message. Have a nice day!" : 
+                "Gracias por dejar un mensaje. ¡Que tenga un lindo día!", 
+            'text', 'Joanna', 
+            isEnglish ? 'en-US' : 'es-ES' );
+
+        rv = [pauseAction, {
+            "Type" : "PlayAudio",
+            "Parameters" : {
+                "ParticipantTag": "LEG-A",
+                "AudioSource": {
+                    "Type": "S3",
+                    "BucketName": s3AnnounceBucketName,
+                    "Key": s3EntranceKeyName
+                }
+            }
+        }, pauseAction, hangupAction];
+    }
+    return rv;
+};
+
+async function transcribeVoicemail(voicemail) {
+    try {
+        let params = {
+            Media: {
+                MediaFileUri: 'https://' + voicemail.bucket + '.s3.amazonaws.com/' + voicemail.key
+            },
+            TranscriptionJobName: voicemail.id,
+            LanguageCode: voicemail.targetLanguage,
+            MediaFormat: 'wav',
+            OutputBucketName: voicemail.bucket
+        };
+        console.log(params);
+        const rv = await transcribeClient.startTranscriptionJob(params, function (err, data) {
+            if (err) console.log(err, err.stack);
+            else console.log(data);
+        });
+        console.log("Transcription succeeded");
+        console.log(JSON.stringify(rv));
+    }
+    catch (transcriptionError) {
+        console.log("Start transcription job failed");
+        console.log(JSON.stringify(transcriptionError));
+    }
 };
 
 async function getMailbox(mailboxString) {
@@ -223,10 +436,147 @@ async function getMailbox(mailboxString) {
     return null;
 };
 
+async function getVoicemail(voicemailID) {
+    const getVoicemail = gql`
+    query GetVoicemail($id: ID!) {
+        getVoicemail(id: $id) {
+            id
+            state
+            mailboxID
+            callerID
+            duration
+            timestamp
+            transcript
+            bucket
+            key
+            targetLanguage
+        }
+    }
+    `;
+    
+    try {
+        const graphqlData = await axios({
+            url: process.env.API_VISUALVOICEMAIL_GRAPHQLAPIENDPOINTOUTPUT,
+            method: 'post',
+            headers: {
+                'x-api-key': process.env.API_VISUALVOICEMAIL_GRAPHQLAPIKEYOUTPUT
+            },
+            data: {
+                query: print(getVoicemail),
+                variables: {
+                    id: voicemailID
+                }
+            }
+        });
+        return graphqlData.data.data.getVoicemail;
+    } catch (err) {
+        console.log('Error querying appsync ', err);
+    }
+    return null;
+};
+
+async function getOrCreateVoicemail(voicemailID, callDetails) {
+    let rv = getVoicemail(voicemailID);
+    console.log(JSON.stringify(rv));
+    if (!rv || !rv.id) {
+        const createVoicemail = gql`
+        mutation CreateVoicemail(
+            $input: CreateVoicemailInput!
+            $condition: ModelVoicemailConditionInput
+          ) {
+            createVoicemail(input: $input, condition: $condition) {
+              id
+              state
+              callerID
+              timestamp
+            }
+          }
+        `;
+        try {
+            const callerID = (callDetails && callDetails.From) ? callDetails.From : '';
+            const newVoicemail = {
+                id: voicemailID,
+                state: "Created",
+                callerID: callerID,
+                timestamp: new Date().toISOString()
+            };
+            const graphqlData = await axios({
+                url: process.env.API_VISUALVOICEMAIL_GRAPHQLAPIENDPOINTOUTPUT,
+                method: 'post',
+                headers: {
+                    'x-api-key': process.env.API_VISUALVOICEMAIL_GRAPHQLAPIKEYOUTPUT
+                },
+                data: {
+                    query: print(createVoicemail),
+                    variables: {
+                        input: newVoicemail
+                    }
+                }
+            });
+            rv = newVoicemail;
+        }
+        catch (createError) {
+            console.log("Unable to create voicemail entry " + JSON.stringify(createError));
+            rv = null;
+        }
+    }
+    return rv;
+};
+
+async function updateVoicemail(voicemail) {
+    const updateVoicemail = gql`
+    mutation UpdateVoicemail(
+        $input: UpdateVoicemailInput!
+        $condition: ModelVoicemailConditionInput
+    ) {
+        updateVoicemail(input: $input, condition: $condition) {
+            id
+            state
+            mailboxID
+            mailbox {
+                id
+                mailbox
+                emailAddress
+                createdAt
+                updatedAt
+            }
+            callerID
+            duration
+            timestamp
+            transcript
+            bucket
+            key
+            targetLanguage
+        }
+    }
+    `;
+    
+    try {
+        const graphqlData = await axios({
+            url: process.env.API_VISUALVOICEMAIL_GRAPHQLAPIENDPOINTOUTPUT,
+            method: 'post',
+            headers: {
+                'x-api-key': process.env.API_VISUALVOICEMAIL_GRAPHQLAPIKEYOUTPUT
+            },
+            data: {
+                query: print(updateVoicemail),
+                variables: {
+                    input: voicemail
+                }
+            }
+        });
+        return voicemail;
+    }
+    catch (createError) {
+        console.log("Unable to update voicemail entry " + JSON.stringify(createError));
+    }
+    return null;
+};
+
 async function synthesizeWelcomeSpeech(s3Bucket, s3Key) {
 
     let englishBuffer = await synthesizeSpeechInternal("<speak>For english <emphasis>press one.</emphasis><break /><break /></speak>", 'ssml', 'Joanna', 'en-US');
-    let spanishBuffer = await synthesizeSpeechInternal("<speak>Para español <emphasis>presione dos.</emphasis><break /><break /></speak>", 'ssml', 'Joanna', 'es-MX');
+    let spanishBuffer = await synthesizeSpeechInternal("<speak>Para español <emphasis>presione dos.</emphasis><break /><break /></speak>", 'ssml', 'Joanna', 'es-ES');
     if (englishBuffer && spanishBuffer) {
         let audioBuffer = _appendBuffer(englishBuffer, spanishBuffer);
         return audioBuffer ? addWaveHeaderAndUploadToS3(audioBuffer, s3Bucket, s3Key) : null;    
@@ -398,6 +748,27 @@ function getLegACallDetails(event) {
     }
     return rv;
 }
+
+function getVoicemailID(event) {
+    let callDetails = getLegACallDetails(event);
+    return event.CallDetails.SipMediaApplicationId + '-' + callDetails.CallId;
+};
+
+const VoicemailState = {
+    Created             : "Created",
+    LanguageSelected    : "LanguageSelected",
+    MailboxSelected     : "MailboxSelected",
+    Recorded            : "Recorded",
+    Transcribed         : "Transcribed"
+};
+
+function isEnglishVoicemail(voicemail) {
+    return (voicemail && isEnglish(voicemail.targetLanguage));
+};
+
+function isEnglish(voicemailTargetLanguage) {
+    return voicemail.targetLanguage === 'en-US'
+};
   
  
   
