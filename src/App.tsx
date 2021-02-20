@@ -2,9 +2,19 @@ import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import GraphQLAPI, {GRAPHQL_AUTH_MODE, GraphQLResult, graphqlOperation} from '@aws-amplify/api';
-import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+import { withAuthenticator } from '@aws-amplify/ui-react';
 import { listMailboxs, getMailbox, createMailbox as createMailboxMutation, updateMailbox, deleteMailbox as deleteMailboxMutation, ListMailboxsQuery } from './graphql';
 import { Mailbox } from './models';
+import { Nav, Navbar, NavDropdown, Form, Button, FormControl } from 'react-bootstrap';
+import SignOut from './SignOut';
+import Mailboxes from './Mailboxes';
+import Messages from './Messages';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from 'react-router-dom';
 
 const initialFormState = { id: '', mailbox: '', emailAddress: '' };
 
@@ -43,34 +53,36 @@ function App() {
   }
 
   return (
+    <Router>
     <div className="App">
-      <h1>My Mailboxes</h1>
-      <input
-        onChange={e => setFormData({ ...formData, 'id': e.target.value, 'mailbox': e.target.value})}
-        placeholder="Mailbox Name"
-        value={formData.mailbox}
-      />
-      <input
-        onChange={e => setFormData({ ...formData, 'emailAddress': e.target.value})}
-        placeholder="Mailbox Address"
-        value={formData.emailAddress}
-      />
-      <button onClick={createMailbox}>Create Mailbox</button>
-      <div style={{marginBottom: 30}}>
-        {
-          mailboxes?.listMailboxs?.items.map(box => {
-            return (
-              <div key={box?.id}>
-                <h2>{box?.mailbox}</h2>
-                <p>{box?.emailAddress}</p>
-                <button onClick={() => deleteMailbox(box)}>Delete Mailbox</button>
-              </div>
-            );
-          })
-        }
-      </div>
-      <AmplifySignOut />
+      <Navbar bg="dark" variant="dark" fixed="top">
+        <Navbar.Brand href="#home">Visual Voicemail</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto">
+          <Nav.Link href="/Mailboxes">Mailboxes</Nav.Link>
+          <Nav.Link href="/Messages">Messages</Nav.Link>
+          </Nav>
+          <Nav className="ml-auto">
+          <Navbar.Text>&nbsp;&nbsp;&nbsp;</Navbar.Text>
+          <SignOut />
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+
+      <Switch>
+        <Route path='/Mailboxes'>
+          <Mailboxes />
+        </Route>
+        <Route path='/Messages'>
+          <Messages />
+        </Route>
+        <Route path='/'>
+          <Mailboxes />
+        </Route>
+      </Switch>
     </div>
+    </Router>
   );
 }
 

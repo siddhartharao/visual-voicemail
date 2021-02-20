@@ -176,7 +176,7 @@ export type UpdateVoicemailInput = {
 };
 
 export type DeleteVoicemailInput = {
-  id?: string | null,
+  id: string,
 };
 
 export type ModelMailboxFilterInput = {
@@ -209,6 +209,12 @@ export type ModelVoicemailFilterInput = {
   or?: Array< ModelVoicemailFilterInput | null > | null,
   not?: ModelVoicemailFilterInput | null,
 };
+
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
 
 export type ModelVoicemailConnection = {
   __typename: "ModelVoicemailConnection",
@@ -424,9 +430,11 @@ export type GetVoicemailQuery = {
 };
 
 export type ListVoicemailsQueryVariables = {
+  id?: string | null,
   filter?: ModelVoicemailFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
+  sortDirection?: ModelSortDirection | null,
 };
 
 export type ListVoicemailsQuery = {

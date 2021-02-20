@@ -270,6 +270,7 @@ async function verifyMailbox(event, callID, voicemailID, voicemail) {
                     }
                 }
             };
+            voicemail.mailboxID = mailboxID;
             voicemail.state = VoicemailState.MailboxSelected;
             await updateVoicemail(voicemail);
             rv = [audioPlayAction, recordMessageAction];

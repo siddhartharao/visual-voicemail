@@ -12,7 +12,10 @@ type Mailbox @model {
   emailAddress: String
 }
 
-type Voicemail @model {
+type Voicemail @model 
+  @key(fields: ["id"])
+  @key(name: "queryIndex", fields: ["state", "timestamp"])
+{
   id: ID!
   state: VoicemailState
   mailboxID: ID

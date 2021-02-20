@@ -1,4 +1,12 @@
 .App {
+}
+
+.TextAlignRight {
+  float: right;
+}
+
+.TextAlignCenter {
+  float: center;
   text-align: center;
 }
 

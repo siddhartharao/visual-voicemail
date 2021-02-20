@@ -58,11 +58,19 @@ export const getVoicemail = /* GraphQL */ `
 `;
 export const listVoicemails = /* GraphQL */ `
   query ListVoicemails(
+    $id: ID
     $filter: ModelVoicemailFilterInput
     $limit: Int
     $nextToken: String
+    $sortDirection: ModelSortDirection
   ) {
-    listVoicemails(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listVoicemails(
+      id: $id
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      sortDirection: $sortDirection
+    ) {
       items {
         id
         state
