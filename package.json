@@ -14,7 +14,7 @@
     "bootstrap": "^4.6.0",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.11.0",
-    "jquery": "^1.9.1",
+    "jquery": ">=3.5.0",
     "moment": "^2.29.1",
     "popper.js": "^1.16.1",
     "react": "^17.0.1",
