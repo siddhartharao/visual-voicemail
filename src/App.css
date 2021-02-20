@@ -3,6 +3,8 @@
 
 .TextAlignRight {
   float: right;
+  vertical-align: middle;
+  text-align: right;
 }
 
 .TextAlignCenter {

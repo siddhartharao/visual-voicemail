@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import GraphQLAPI, {GRAPHQL_AUTH_MODE, GraphQLResult, graphqlOperation} from '@aws-amplify/api';
 import { listVoicemails, ListVoicemailsQuery } from './graphql';
 import { Mailbox, VoicemailState } from './models';
-import { Card, ListGroup, Badge } from 'react-bootstrap';
+import { Card, ListGroup, Badge, Container, Row, Col } from 'react-bootstrap';
 import moment from 'moment';
+import playImage from './play.png';
+import Player from './Player';
 
 const initialFormState = { id: '', mailbox: '', emailAddress: '' };
 
@@ -25,9 +27,10 @@ function Messages() {
               eq: VoicemailState.TRANSCRIBED
             }
           },
-          limit: 10
+          limit: 100
         }
       }) as { data: ListVoicemailsQuery };
+      console.log(response.data);
       setVoicemail(response.data);
     }
     catch (error) {
@@ -46,18 +49,31 @@ function Messages() {
               <Card>
                 <Card.Header>{message?.callerID}
                   
-                  <Badge className="TextAlignRight" pill variant="primary">{message?.mailboxID}</Badge>
+                <Badge className="TextAlignRight" pill variant="primary">{message?.mailboxID}</Badge>
                   
                 </Card.Header>
                 <Card.Body>
                   <Card.Title>
                   </Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">{message?.transcript}</Card.Subtitle>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    <Container fluid={true}>
+                      <Row lg="2" md="2" sm="2" xl="2" xs="2" className="align-items-center">
+                        <Col lg="11" md="10" sm="10" xl="11" xs="10">
+                          <i>"{message?.transcript}"</i>
+                        </Col>
+                        <Col lg="auto" md="auto" sm="auto" xl="auto" xs="auto">
+                          <Player audioKey={message?.key} />
+                        </Col>
+                      </Row>
+                    </Container>
+                  </Card.Subtitle>
                   <Card.Text>
 
                   </Card.Text>
                 </Card.Body>
-                <Card.Footer className="TextAlignCenter">{moment(message?.timestamp).format('dddd, MMMM Do')}</Card.Footer>
+                <Card.Footer className="TextAlignCenter">{moment(message?.timestamp).format('dddd, MMMM Do')}
+                
+                </Card.Footer>
               </Card>
               </ListGroup.Item>
             );
