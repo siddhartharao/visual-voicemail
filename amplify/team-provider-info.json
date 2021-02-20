@@ -22,10 +22,6 @@
         }
       },
       "function": {
-        "voicemailsma": {
-          "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
-          "s3Key": "amplify-builds/voicemailsma-4a49497175464d326539-build.zip"
-        },
         "vmsma": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
           "s3Key": "amplify-builds/vmsma-4236696454574e556f79-build.zip"
@@ -33,10 +29,6 @@
         "visualvoicemailcommon": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
           "s3Key": "amplify-builds/visualvoicemailcommon-build.zip"
-        },
-        "scratchpad": {
-          "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
-          "s3Key": "amplify-builds/scratchpad-554c66325a6e47496168-build.zip"
         },
         "vmtranscriptionhandler": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
