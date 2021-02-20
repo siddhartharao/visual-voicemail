@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import GraphQLAPI, {GRAPHQL_AUTH_MODE, GraphQLResult, graphqlOperation} from '@aws-amplify/api';
-import { listVoicemails, ListVoicemailsQuery } from './graphql';
+import { ModelSortDirection, voicemailsByState, VoicemailsByStateQuery } from './graphql';
 import { Mailbox, VoicemailState } from './models';
 import { Card, ListGroup, Badge, Container, Row, Col } from 'react-bootstrap';
 import moment from 'moment';
@@ -10,7 +10,7 @@ import Player from './Player';
 const initialFormState = { id: '', mailbox: '', emailAddress: '' };
 
 function Messages() {
-  const [voicemails, setVoicemail] = useState<ListVoicemailsQuery | undefined>(undefined);
+  const [voicemails, setVoicemail] = useState<VoicemailsByStateQuery | undefined>(undefined);
 
   useEffect(() => {
     fetchMessages();
@@ -19,17 +19,14 @@ function Messages() {
   async function fetchMessages() {
     try {
       const response = await GraphQLAPI.graphql({
-        query: listVoicemails,
+        query: voicemailsByState,
         authMode: GRAPHQL_AUTH_MODE.API_KEY,
         variables: {
-          filter: {
-            state: {
-              eq: VoicemailState.TRANSCRIBED
-            }
-          },
-          limit: 100
+          state: VoicemailState.TRANSCRIBED,
+          sortDirection: ModelSortDirection.DESC,
+          limit: 5
         }
-      }) as { data: ListVoicemailsQuery };
+      }) as { data: VoicemailsByStateQuery };
       console.log(response.data);
       setVoicemail(response.data);
     }
@@ -43,7 +40,7 @@ function Messages() {
     <h3>&nbsp;</h3><h3>&nbsp;</h3>
     <ListGroup>
     {
-        voicemails?.listVoicemails?.items.map(message => {
+        voicemails?.voicemailsByState?.items.map(message => {
             return (
               <ListGroup.Item>
               <Card>
@@ -71,7 +68,7 @@ function Messages() {
 
                   </Card.Text>
                 </Card.Body>
-                <Card.Footer className="TextAlignCenter">{moment(message?.timestamp).format('dddd, MMMM Do')}
+                <Card.Footer className="TextAlignCenter">{moment(message?.timestamp).format('dddd, MMMM Do h:mm:ss a')}
                 
                 </Card.Footer>
               </Card>

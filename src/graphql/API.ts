@@ -222,6 +222,16 @@ export type ModelVoicemailConnection = {
   nextToken?: string | null,
 };
 
+export type ModelStringKeyConditionInput = {
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+};
+
 export type CreateMailboxMutationVariables = {
   input?: CreateMailboxInput,
   condition?: ModelMailboxConditionInput | null,
@@ -439,6 +449,37 @@ export type ListVoicemailsQueryVariables = {
 
 export type ListVoicemailsQuery = {
   listVoicemails?:  {
+    __typename: "ModelVoicemailConnection",
+    items?:  Array< {
+      __typename: "Voicemail",
+      id: string,
+      state?: VoicemailState | null,
+      mailboxID?: string | null,
+      callerID?: string | null,
+      duration?: number | null,
+      timestamp?: string | null,
+      transcript?: string | null,
+      bucket?: string | null,
+      key?: string | null,
+      targetLanguage?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type VoicemailsByStateQueryVariables = {
+  state?: VoicemailState | null,
+  timestamp?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelVoicemailFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type VoicemailsByStateQuery = {
+  voicemailsByState?:  {
     __typename: "ModelVoicemailConnection",
     items?:  Array< {
       __typename: "Voicemail",

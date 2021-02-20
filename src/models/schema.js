@@ -148,6 +148,17 @@ export const schema = {
                             "timestamp"
                         ]
                     }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "secondQueryIndex",
+                        "queryField": "voicemailsByState",
+                        "fields": [
+                            "state",
+                            "timestamp"
+                        ]
+                    }
                 }
             ]
         }
@@ -165,5 +176,5 @@ export const schema = {
         }
     },
     "nonModels": {},
-    "version": "98be1de7587cdebfd6a69aa3a1aa6322"
+    "version": "09f0fc397b6161dc8f671a6a48aed124"
 };

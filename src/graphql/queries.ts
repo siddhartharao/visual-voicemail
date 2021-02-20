@@ -89,3 +89,38 @@ export const listVoicemails = /* GraphQL */ `
     }
   }
 `;
+export const voicemailsByState = /* GraphQL */ `
+  query VoicemailsByState(
+    $state: VoicemailState
+    $timestamp: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelVoicemailFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    voicemailsByState(
+      state: $state
+      timestamp: $timestamp
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        state
+        mailboxID
+        callerID
+        duration
+        timestamp
+        transcript
+        bucket
+        key
+        targetLanguage
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
