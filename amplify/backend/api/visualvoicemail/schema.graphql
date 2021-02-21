@@ -14,7 +14,7 @@ type Mailbox @model {
 
 type Voicemail @model 
   @key(fields: ["id"])
-  @key(name: "queryIndex", fields: ["mailboxID", "state", "timestamp"])
+  @key(name: "queryIndex", queryField: "voicemailsByMailboxStateAndTime", fields: ["mailboxID", "state", "timestamp"])
   @key(name: "secondQueryIndex", queryField: "voicemailsByState", fields: ["state", "timestamp"])
 {
   id: ID!

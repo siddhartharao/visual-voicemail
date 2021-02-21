@@ -222,6 +222,21 @@ export type ModelVoicemailConnection = {
   nextToken?: string | null,
 };
 
+export type ModelVoicemailQueryIndexCompositeKeyConditionInput = {
+  eq?: ModelVoicemailQueryIndexCompositeKeyInput | null,
+  le?: ModelVoicemailQueryIndexCompositeKeyInput | null,
+  lt?: ModelVoicemailQueryIndexCompositeKeyInput | null,
+  ge?: ModelVoicemailQueryIndexCompositeKeyInput | null,
+  gt?: ModelVoicemailQueryIndexCompositeKeyInput | null,
+  between?: Array< ModelVoicemailQueryIndexCompositeKeyInput | null > | null,
+  beginsWith?: ModelVoicemailQueryIndexCompositeKeyInput | null,
+};
+
+export type ModelVoicemailQueryIndexCompositeKeyInput = {
+  state?: VoicemailState | null,
+  timestamp?: string | null,
+};
+
 export type ModelStringKeyConditionInput = {
   eq?: string | null,
   le?: string | null,
@@ -449,6 +464,37 @@ export type ListVoicemailsQueryVariables = {
 
 export type ListVoicemailsQuery = {
   listVoicemails?:  {
+    __typename: "ModelVoicemailConnection",
+    items?:  Array< {
+      __typename: "Voicemail",
+      id: string,
+      state?: VoicemailState | null,
+      mailboxID?: string | null,
+      callerID?: string | null,
+      duration?: number | null,
+      timestamp?: string | null,
+      transcript?: string | null,
+      bucket?: string | null,
+      key?: string | null,
+      targetLanguage?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type VoicemailsByMailboxStateAndTimeQueryVariables = {
+  mailboxID?: string | null,
+  stateTimestamp?: ModelVoicemailQueryIndexCompositeKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelVoicemailFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type VoicemailsByMailboxStateAndTimeQuery = {
+  voicemailsByMailboxStateAndTime?:  {
     __typename: "ModelVoicemailConnection",
     items?:  Array< {
       __typename: "Voicemail",
