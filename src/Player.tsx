@@ -86,7 +86,7 @@ export class Player extends Component<PlayerProperties, PlayerState> {
     render() {
         return (
             <span>
-                <img onClick={() => { return this.playPause(); }} className="pull-right"  
+                <img onTouchEnd={() => { return this.playPause(); }} onClick={() => { return this.playPause(); }} className="pull-right"  
                     src={(this.state && this.state.playing) ? pauseImage : playImage} width='32' height='32' />
                 <audio ref={this.audioPlayer} onEnded={() => { this.onAudioEnded(); }} autoPlay={false} preload="auto" />
             </span>
