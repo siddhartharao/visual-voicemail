@@ -29,7 +29,7 @@
         },
         "vmtranscriptionhandler": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
-          "s3Key": "amplify-builds/vmtranscriptionhandler-5241736264524166306e-build.zip"
+          "s3Key": "amplify-builds/vmtranscriptionhandler-347652672b71492b5645-build.zip"
         },
         "lexexecutor": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",

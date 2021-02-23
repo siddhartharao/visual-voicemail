@@ -1,5 +1,13 @@
 {
   "permissions": {
+    "auth": {
+      "visualvoicemaile476c410": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
     "api": {
       "visualvoicemail": [
         "Query",

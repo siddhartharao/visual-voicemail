@@ -68,6 +68,13 @@
       "service": "Lambda",
       "dependsOn": [
         {
+          "category": "auth",
+          "resourceName": "visualvoicemaile476c410",
+          "attributes": [
+            "UserPoolId"
+          ]
+        },
+        {
           "category": "api",
           "resourceName": "visualvoicemail",
           "attributes": [
