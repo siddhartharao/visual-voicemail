@@ -1,6 +1,6 @@
 {
   "auth": {
-    "visualvoicemail8aea0f86": {
+    "visualvoicemaile476c410": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
@@ -45,13 +45,6 @@
       "service": "Lambda",
       "dependsOn": [
         {
-          "category": "auth",
-          "resourceName": "visualvoicemail8aea0f86",
-          "attributes": [
-            "UserPoolId"
-          ]
-        },
-        {
           "category": "api",
           "resourceName": "visualvoicemail",
           "attributes": [
@@ -66,13 +59,6 @@
           "attributes": [
             "BucketName"
           ]
-        },
-        {
-          "category": "function",
-          "resourceName": "visualvoicemailcommon",
-          "attributes": [
-            "Arn"
-          ]
         }
       ]
     },
@@ -81,13 +67,6 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
       "dependsOn": [
-        {
-          "category": "auth",
-          "resourceName": "visualvoicemail8aea0f86",
-          "attributes": [
-            "UserPoolId"
-          ]
-        },
         {
           "category": "api",
           "resourceName": "visualvoicemail",
@@ -112,13 +91,6 @@
       "service": "Lambda",
       "dependsOn": [
         {
-          "category": "auth",
-          "resourceName": "visualvoicemail8aea0f86",
-          "attributes": [
-            "UserPoolId"
-          ]
-        },
-        {
           "category": "api",
           "resourceName": "visualvoicemail",
           "attributes": [
@@ -132,13 +104,6 @@
           "resourceName": "visualvoicemail167e06e1",
           "attributes": [
             "BucketName"
-          ]
-        },
-        {
-          "category": "function",
-          "resourceName": "visualvoicemailcommon",
-          "attributes": [
-            "Arn"
           ]
         }
       ]
@@ -149,13 +114,6 @@
       "service": "Lambda",
       "dependsOn": [
         {
-          "category": "auth",
-          "resourceName": "visualvoicemail8aea0f86",
-          "attributes": [
-            "UserPoolId"
-          ]
-        },
-        {
           "category": "api",
           "resourceName": "visualvoicemail",
           "attributes": [
@@ -169,13 +127,6 @@
           "resourceName": "visualvoicemail167e06e1",
           "attributes": [
             "BucketName"
-          ]
-        },
-        {
-          "category": "function",
-          "resourceName": "visualvoicemailcommon",
-          "attributes": [
-            "Arn"
           ]
         }
       ]

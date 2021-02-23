@@ -1,13 +1,5 @@
 {
   "permissions": {
-    "auth": {
-      "visualvoicemail8aea0f86": [
-        "create",
-        "read",
-        "update",
-        "delete"
-      ]
-    },
     "api": {
       "visualvoicemail": [
         "Query",

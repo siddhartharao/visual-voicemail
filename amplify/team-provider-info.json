@@ -12,9 +12,6 @@
       "AmplifyAppId": "d2umdk10zdxmdm"
     },
     "categories": {
-      "auth": {
-        "visualvoicemail8aea0f86": {}
-      },
       "storage": {
         "visualvoicemail167e06e1": {
           "bucketName": "voicemailmessages",
@@ -24,7 +21,7 @@
       "function": {
         "vmsma": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
-          "s3Key": "amplify-builds/vmsma-4236696454574e556f79-build.zip"
+          "s3Key": "amplify-builds/vmsma-7876513233522b795670-build.zip"
         },
         "visualvoicemailcommon": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
@@ -32,16 +29,19 @@
         },
         "vmtranscriptionhandler": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
-          "s3Key": "amplify-builds/vmtranscriptionhandler-5a39565352716d6d4451-build.zip"
+          "s3Key": "amplify-builds/vmtranscriptionhandler-5241736264524166306e-build.zip"
         },
         "lexexecutor": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
-          "s3Key": "amplify-builds/lexexecutor-2f75634a463131694736-build.zip"
+          "s3Key": "amplify-builds/lexexecutor-76516369323232615430-build.zip"
         },
         "voicemailbot": {
           "deploymentBucketName": "amplify-amplify533d0818e0964-staging-222331-deployment",
-          "s3Key": "amplify-builds/voicemailbot-7038662f464d47772b5a-build.zip"
+          "s3Key": "amplify-builds/voicemailbot-3745516b4c39734a6138-build.zip"
         }
+      },
+      "auth": {
+        "visualvoicemaile476c410": {}
       }
     },
     "nonCFNdata": {
