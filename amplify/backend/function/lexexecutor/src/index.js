@@ -11,6 +11,11 @@
 	STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME
 Amplify Params - DO NOT EDIT */
 
+// This function is the main Lambda used by SMA to exercise and execute a Lex bot in the middle
+// of an incoming call. I achieve Lex integration by using the Record, Playback, mechanisms available
+// in SMA. Undoubtedly more interesting scenarios can be developed, including collecting digits to drive
+// a Lex bot versus voice.
+
 const axios = require('axios');
 const gql = require('graphql-tag');
 const graphql = require('graphql');
@@ -35,6 +40,7 @@ const lexClient = new AWS.LexRuntime({
     region: REGION
 });
 
+/* The main entry point for SMA */
 
 exports.handler = async (event, context, callback) => {
     console.log("Begin SMA Event");
@@ -77,14 +83,27 @@ exports.handler = async (event, context, callback) => {
     
 };
 
+// You can setup a S3 expiration rule to expire all of these temporary objects that we create during the process.
+// For debugging purposes I do not delete the temporary objects for now.
 const announcementsKeyPrefix = "announcements/";
-const messageMaximumLengthInSeconds = 10;
+// This gives the caller five seconds to provide a Lex directive or response. We intend on handling recording until
+// silence detection, which can make this response period more flexible
+const messageMaximumLengthInSeconds = 5;
+// For the example, I'm using a single S3 bucket, you can certainly break apart different buckets for different use
+// cases.
 const s3AnnounceBucketName = process.env.STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME;
+// This is the name of my Lex bot. You can use any Lex bot you configure in the portal, in any region that makes sense
+// for your app.
 const lexBotName = 'VoicemailRetrievalBot';
 const lexBotAlias = 'PROD';
+// This is the Lex input type for telephone calls.
 const lexInputContentType = 'audio/lpcm; sample-rate=8000; sample-size-bits=16; channel-count=1; is-big-endian=false';
+// To provide a level of flexibility, I'm actually just taking SSML responses from Lex and reencoding with Polly.
+// You could also choose to take PCM responses and render them back directly. It really is up to you. I have examples
+// in other parts of the solve about constructing wave files for playback (indeed, the code is also available in this function).
 const lexOutputContentType = 'text/plain; charset=utf-8';
 
+// New call, synthesis of a dynamic welcome speech using Polly.
 async function newCall(event) {
     let rv = [];
     const legA = getLegACallDetails(event);
@@ -98,6 +117,10 @@ async function newCall(event) {
     return rv;
 };
 
+// This is the main entry point for a successful action response. It has to handle multiple 
+// different success responses to different actions. In the Lex executor, however, it is truly simple -
+// we are called back for Recording actions only, enabling us to simply just pump the Lex request/resonse
+// loop.
 async function actionSuccessful(event) {
     console.log("In recording complete step");
     console.log(JSON.stringify(event));
@@ -154,6 +177,7 @@ async function actionSuccessful(event) {
     return rv;
 };
 
+// Construct a playback and record action sequence for the Lex bot.
 async function playResponseAndRecordForLex(event, lexResponseKey, currentActions) {
     let rv = [];
     if (currentActions && currentActions.length > 0)
@@ -194,7 +218,7 @@ async function playResponseAndRecordForLex(event, lexResponseKey, currentActions
     return rv;
 };
 
-
+// Helper methods to synthesize speech using Polly
 async function synthesizeWelcomeSpeech(s3Bucket, s3Key) {
 
     let audioBuffer = await synthesizeSpeechInternal("<speak>Welcome to the voicemail retrieval hotline. You can begin by saying <emphasis>get a message.</emphasis><break />After each response press the pound key, or wait a few seconds.<break /></speak>", 'ssml', 'Joanna', 'en-US');
@@ -328,7 +352,7 @@ var _appendBuffer = function(buffer1, buffer2) {
 const pauseAction = {
     "Type": "Pause",
     "Parameters": {
-        "DurationInMilliseconds": "3000"
+        "DurationInMilliseconds": "1250"
     }
 };
 
@@ -378,10 +402,15 @@ function getLegACallDetails(event) {
     return rv;
 }
 
+// Helper GraphQL methods for searching for voicemail messages for playback.
+// This is a really unintelligent bot that simply asks for the date we want to
+// retrieve a message for, the mailbox number, and finds a single message and returns
+// it.
+
 async function searchForMessages(mailboxString, messageDate) {
     /*
     query MyQuery {
-  voicemailsByMailboxStateAndTime(filter: {timestamp: {beginsWith: "2021-02-20"}}, mailboxID: "1234", limit: 1) {
+  voicemailsByMailboxStateAndTime(mailboxID: "1234", stateTimestamp: {ge: {timestamp: "2020-02-25", state: Created}}, sortDirection: DESC) {
     items {
       bucket
       callerID
@@ -399,9 +428,10 @@ async function searchForMessages(mailboxString, messageDate) {
   }
 }
 */
+
     const searchMessages = gql`
     query MyQuery($mailboxID: ID!, $timestampBeginsWith: String!) {
-        voicemailsByMailboxStateAndTime(filter: {timestamp: {beginsWith: $timestampBeginsWith}}, mailboxID: $mailboxID, limit: 1) {
+        voicemailsByMailboxStateAndTime(mailboxID: $mailboxID, stateTimestamp: {ge: {timestamp: $timestampBeginsWith, state: Created}}, sortDirection: DESC, limit: 1) {
             items {
                 bucket
                 callerID
@@ -442,3 +472,4 @@ async function searchForMessages(mailboxString, messageDate) {
     }
     return null;
 }
+  

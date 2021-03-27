@@ -152,7 +152,7 @@ async function getMailbox(mailboxString) {
 async function searchForMessages(mailboxString, messageDate) {
     /*
     query MyQuery {
-  voicemailsByMailboxStateAndTime(filter: {timestamp: {beginsWith: "2021-02-20"}}, mailboxID: "1234", limit: 1) {
+  voicemailsByMailboxStateAndTime(mailboxID: "1234", stateTimestamp: {ge: {timestamp: "2020-02-25", state: Created}}, sortDirection: DESC) {
     items {
       bucket
       callerID
@@ -170,9 +170,10 @@ async function searchForMessages(mailboxString, messageDate) {
   }
 }
 */
+
     const searchMessages = gql`
     query MyQuery($mailboxID: ID!, $timestampBeginsWith: String!) {
-        voicemailsByMailboxStateAndTime(filter: {timestamp: {beginsWith: $timestampBeginsWith}}, mailboxID: $mailboxID, limit: 1) {
+        voicemailsByMailboxStateAndTime(mailboxID: $mailboxID, stateTimestamp: {ge: {timestamp: $timestampBeginsWith, state: Created}}, sortDirection: DESC, limit: 1) {
             items {
                 bucket
                 callerID

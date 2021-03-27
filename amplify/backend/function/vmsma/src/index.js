@@ -11,6 +11,11 @@
 	STORAGE_VISUALVOICEMAIL167E06E1_BUCKETNAME
 Amplify Params - DO NOT EDIT */
 
+// This Amplify function is the main auto-attendant Lambda for storing voicemails.
+// It is built to first prompt for the language the user would like to use (Spanish or English).
+// It then proceeds to prompt for a mailbox. It verifies the mailbox.
+// It then asks to record a voicemail
+
 const axios = require('axios');
 const gql = require('graphql-tag');
 const graphql = require('graphql');
@@ -305,7 +310,7 @@ async function actionCollectMailbox(event, callID, voicemailID, voicemail) {
         const s3EntranceFailKeyName = announcementsKeyPrefix + callID + "/collectmailboxerror.wav";
         await synthesizeSpeech(s3AnnounceBucketName, 
             s3EntranceKeyName, 
-            isEnglish ? "Please enter a mailbox number." : "Ingrese un número de buzón.", 
+            isEnglish ? "Please enter a mailbox number followed by the pound sign." : "Ingrese un número de buzón.", 
             'text', 'Joanna', 
             isEnglish ? 'en-US' : 'es-ES' );
         await synthesizeSpeech(s3AnnounceBucketName, 
@@ -699,7 +704,7 @@ var _appendBuffer = function(buffer1, buffer2) {
 const pauseAction = {
     "Type": "Pause",
     "Parameters": {
-        "DurationInMilliseconds": "3000"
+        "DurationInMilliseconds": "1500"
     }
 };
 

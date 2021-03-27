@@ -48,7 +48,9 @@ export class Player extends Component<PlayerProperties, PlayerState> {
     }
 
     async playPause() {
+        debugger;
         try {
+            alert("Got here");
             if (this.audioPlayer && this.audioPlayer.current && this.props.audioKey) {
                 const newState: PlayerState = 
                     {
@@ -62,11 +64,16 @@ export class Player extends Component<PlayerProperties, PlayerState> {
                         // url (even if it is pre-signed). Just doesn't feel right to get a VM
                         // as a URL, so let's directly download the audio for playback
                         Storage.configure({customPrefix: {public: ''}});
-                        const playerData: any = await Storage.get(this.props.audioKey, {download: true}) as any;
+                        const playerData: any = await Storage.get(this.props.audioKey) as any;
+                        /*
                         if (playerData && playerData.ContentLength > 0 && playerData.Body) {
                             newState.playerData = URL.createObjectURL(playerData.Body);
                             this.audioPlayer.current.src = newState.playerData;
                         }
+                        */
+                       if (playerData) {
+                           this.audioPlayer.current.src = playerData;
+                       }
                     }
                     await this.audioPlayer.current.play();
                     newState.playing = true;
@@ -78,16 +85,18 @@ export class Player extends Component<PlayerProperties, PlayerState> {
                 this.setState(newState);
             }
         } catch (playError) {
+            alert(JSON.stringify(playError));
             console.log("Play error...");
             console.log(playError);
         }
+        return false;
     }
 
     render() {
         return (
             <span>
-                <img onTouchEnd={() => { return this.playPause(); }} onClick={() => { return this.playPause(); }} className="pull-right"  
-                    src={(this.state && this.state.playing) ? pauseImage : playImage} width='32' height='32' />
+                <a href="#" onClick={() => { return this.playPause(); }}><img onTouchEnd={() => { return this.playPause(); }} className="pull-right"  
+                    src={(this.state && this.state.playing) ? pauseImage : playImage} width='32' height='32' /></a>
                 <audio ref={this.audioPlayer} onEnded={() => { this.onAudioEnded(); }} autoPlay={false} preload="auto" />
             </span>
         );
