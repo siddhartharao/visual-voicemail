@@ -1,3 +1,16 @@
+The interesting bits for customers is here:
+
+https://github.com/siddhartharao/visual-voicemail/tree/master/amplify/backend/function
+
+The functions of use are:
+
+lexexecutor - provides an interface between Amazon Chime Voice Connector SIP Media Applications and Lex.
+visualvoicemailcommon - ignore, just a Lambda layer that I intend to probably move a bunch of functions that are reused. But I'm not sure, because right now each Lambda is isolated and can be used as is.
+vmsma - The actual IVR that does voicemail recording. Also spins off the Transcribe job.
+vmtranscriptionhandler - a S3 job that looks for incoming transcriptions and updates DynamoDB, also sends an e-mail or SMS (Pinpoint) to the mailbox owner.
+voicemailbot - The Lambda validation handler for the Lex voicemail retrieval bot.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
