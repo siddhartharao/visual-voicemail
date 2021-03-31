@@ -8,3 +8,7 @@ You would init the amplify project with:
 </code>
 
 The project depends on a central S3 bucket (referenced throughout the Lambdas) for storing the voicemail and generated announcements. We also require custom IAM permissions to call Polly, Transcribe. You will see these permissions in the <a href="https://github.com/siddhartharao/visual-voicemail/blob/master/amplify/backend/function/vmsma/vmsma-cloudformation-template.json#L253">CloudFormation JSON</a> for each of the Amplify Lambda functions.
+
+### Give me a Diagram!
+![image](https://user-images.githubusercontent.com/58867898/113094465-91b3a400-91a6-11eb-96c2-ce50c70fc5a8.png)
+
