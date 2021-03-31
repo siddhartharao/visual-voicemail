@@ -3,6 +3,8 @@ The visual voicemail app is composed of three components. First, there is a web 
 
 ### Building the Example Using Your Own AWS Account
 You would init the amplify project with:
+<code>
   amplify init --app https://github.com/siddhartharao/visual-voicemail/
+</code>
 
 The project depends on a central S3 bucket (referenced throughout the Lambdas) for storing the voicemail and generated announcements. We also require custom IAM permissions to call Polly, Transcribe. You will see these permissions in the <a href="https://github.com/siddhartharao/visual-voicemail/blob/master/amplify/backend/function/vmsma/vmsma-cloudformation-template.json#L253">CloudFormation JSON</a> for each of the Amplify Lambda functions.
