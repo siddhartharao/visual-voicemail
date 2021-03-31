@@ -12,3 +12,12 @@ The project depends on a central S3 bucket (referenced throughout the Lambdas) f
 ### Give me a Diagram!
 ![image](https://user-images.githubusercontent.com/58867898/113094465-91b3a400-91a6-11eb-96c2-ce50c70fc5a8.png)
 
+### Where Are the Interesting Functions
+<a href="https://github.com/siddhartharao/visual-voicemail/blob/master/amplify/backend/function/vmsma/src/index.js">vmsma</a><br />
+<a href="https://github.com/siddhartharao/visual-voicemail/blob/master/amplify/backend/function/lexexecutor/src/index.js">lexexecutor</a><br />
+
+### How do I Build an Amazon Chime SIP Media Application
+Documentation links: <br />
+<a href="https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html">SIP Media Application Developer Guide</a><br />
+<a href="https://docs.aws.amazon.com/chime/latest/ag/voice-connectors.html">Amazon Chime Voice Connector</a><br />
+This application was built using the <a href="https://docs.amplify.aws/start/q/integration/react">Amplify React tutorial</a>.
